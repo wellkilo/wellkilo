@@ -1,0 +1,353 @@
+#include <iostream>
+#include <vector>
+#include <map>
+#include <string>
+#include <functional>
+#include <sstream>
+#include <cstdint>
+
+class Simple8086 {
+private:
+    std::vector<std::string> memory; // 存储指令和数据的内存模型
+    std::map<std::string, int16_t> registers; // 寄存器组
+    std::map<std::string, std::function<void(const std::string &, const std::string &)>> instructions; // 指令集及其对应的处理函数
+
+    // 总线接口单元（BIU, Bus Interface Unit）
+    struct BIU {
+        Simple8086* cpu; // 指向Simple8086实例的指针，以便访问寄存器和内存
+
+        BIU(Simple8086* _cpu) : cpu(_cpu) {}
+
+        std::map<std::string, std::string> addressBus; // 地址总线
+        std::map<std::string, int16_t> dataBus; // 数据总线
+        std::map<std::string, bool> controlBus; // 控制总线
+	
+	// 从内存中获取指令
+        void fetch() {
+            if (cpu->registers["IP"] >= cpu->memory.size()) { // 程序执行完成
+                std::cerr << "Program counter out of bounds, program ends" << std::endl;
+                exit(1);
+            }
+            std::string instruction = cpu->memory[cpu->registers["IP"]];
+            cpu->registers["IP"]++; // 指令指针加1
+            std::cout << "-----------------------------------------" << std::endl;
+            std::cout << cpu->registers["IP"] << " : " << instruction << std::endl; // 输出当前执行指令
+
+            // 转到解码
+            cpu->eu.decode(instruction);
+
+            // 调试输出
+            cpu->printDebugState();
+        }
+	
+        // 更新总线状态
+        void updateBuses(const std::string &operation, const std::string &registerName, const std::string &s) {
+            // 清空总线状态
+            addressBus.clear();
+            dataBus.clear();
+            controlBus.clear();
+
+            // 根据操作更新总线
+            if (operation == "MOV") { // 需判断是寄存器还是立即数
+                if (cpu->eu.registers.find(s) != cpu->eu.registers.end()) addressBus["source"] = s; // 找到是寄存器 传入地址总线
+                else addressBus["source"] = "\\"; // 没找到寄存器 是立即数
+                addressBus["destination"] = registerName;
+                if (cpu->eu.registers.find(s) != cpu->eu.registers.end()) dataBus["data"] = cpu->eu.registers[s]; // 找到是寄存器 传入数据总线
+                else dataBus["data"] = std::stoi(s); // 字符串转int类型
+                controlBus["read"] = true;
+                controlBus["write"] = true;
+            } else if (operation == "ADD") { // 需判断是寄存器还是立即数
+                if (cpu->eu.registers.find(s) != cpu->eu.registers.end()) addressBus["source"] = s;
+                else addressBus["source"] = "\\";
+                addressBus["destination"] = registerName;
+                if (cpu->eu.registers.find(s) != cpu->eu.registers.end()) dataBus["data"] = cpu->eu.registers[s];
+                else dataBus["data"] = std::stoi(s);
+                controlBus["read"] = true;
+                controlBus["write"] = true;
+            } else if (operation == "SUB") {
+                addressBus["source"] = "\\";
+                addressBus["destination"] = registerName;
+                dataBus["data"] = std::stoi(s);
+                controlBus["read"] = true;
+                controlBus["write"] = true;
+            } else if (operation == "MUL" || operation == "DIV") {
+                addressBus["source"] = registerName;
+                addressBus["destination"] = "AX";
+                dataBus["data"] = std::stoi(s);
+                controlBus["read"] = true;
+                controlBus["write"] = true;
+            }
+
+            // 调试输出总线状态
+            printBusState();
+        }
+
+        // 打印总线状态
+        void printBusState() {
+            std::cout << "地址总线:" << std::endl;
+            for (const auto &[key, val]: addressBus) {
+                std::cout << "  " << key << ": " << val << std::endl;
+            }
+
+            std::cout << "数据总线:" << std::endl;
+            for (const auto &[key, val]: dataBus) {
+                std::cout << "  " << key << ": " << val << std::endl;
+            }
+
+            std::cout << "控制总线:" << std::endl;
+            for (const auto &[key, val]: controlBus) {
+                std::cout << "  " << key << ": " << (val ? "true" : "false") << std::endl;
+            }
+        }
+
+    };
+
+    BIU biu; // 创建BIU实例
+
+    // 执行单元（EU, Execution Unit）
+    struct EU {
+        Simple8086* cpu; // 指向Simple8086实例的指针，以便访问寄存器和指令集
+
+        EU(Simple8086* _cpu) : cpu(_cpu) {}
+
+        std::map<std::string, int16_t> registers; // 通用寄存器组
+
+        // 解码指令
+        void decode(const std::string &instruction) {
+            std::istringstream iss(instruction); // 输入字符流
+            std::string op;
+            iss >> op; // 读取操作码
+
+            if (cpu->instructions.find(op) == cpu->instructions.end()) { // 没找到对应的指令
+                std::cerr << "Invalid instruction: " << op << std::endl;
+                exit(1);
+            }
+
+            std::string arg1, arg2;
+            if (op != "HLT" && op != "JMP" && op != "PUSH" && op != "POP" && op != "DIV" && op != "MUL") {
+                // 对于非单操作数指令，读取第一个和第二个参数
+                iss >> arg1 >> arg2;
+            } else {
+                if (op == "JMP") {
+                    iss >> arg2; // 读取跳转地址
+                } else if (op == "PUSH" || op == "POP") {
+                    iss >> arg1; // 读取寄存器名
+                } else if (op == "DIV" || op == "MUL") {
+                    iss >> arg2; // 读取除数或乘数
+                }
+            }
+
+            std::cout << "解码： ";
+            execute(op, arg1, arg2); // 转到执行
+        }
+
+        // 执行指令
+        void execute(std::string op, std::string arg1, std::string arg2) {
+            cpu->instructions[op](arg1, arg2);
+        }
+
+        // MOV指令实现（需判断是寄存器还是立即数）
+        void mov(const std::string &reg, const std::string &s) {
+            if (registers.find(reg) != registers.end()) { // 找到目的寄存器
+                if (registers.find(s) != registers.end()) { // 找到源寄存器
+                    registers[reg] = registers[s]; // 寄存器数据上总线，并传给对应寄存器
+                    std::cout << "操作码：" << "MOV " << "寄存器：" << reg << ", " << s << std::endl;
+                    std::cout << "MOV " << registers[s] << " from " << s << " to " << reg << std::endl;
+                } else { // 立即数
+                    int val = std::stoi(s);
+                    registers[reg] = val; // 数据上总线，并写入对应寄存器
+                    std::cout << "操作码：" << "MOV " << "寄存器：" << reg << " 值：" << val << std::endl;
+                    std::cout << "MOV " << val << " to " << reg << std::endl;
+                }
+                cpu->biu.updateBuses("MOV", reg, s);
+            } else { // 没找到目的寄存器
+                std::cerr << "Invalid register for MOV: " << reg << std::endl;
+                exit(1);
+            }
+        }
+
+        // ADD指令实现（需判断是寄存器还是立即数）
+        void add(const std::string &reg, const std::string &s) {
+            if (registers.find(reg) != registers.end()) {
+                if (registers.find(s) != registers.end()) { // 寄存器
+                    registers[reg] += registers[s];  // ALU数据上总线，总线数据写入寄存器
+                    std::cout << "操作码：" << "ADD " << "寄存器：" << reg << ", " << s << std::endl;
+                    std::cout << "ADD " << s << " to " << reg << ", result is " << registers[reg] << std::endl;
+                } else { // 立即数
+                    int val = std::stoi(s);
+                    registers[reg] += val; // ALU数据上总线，总线数据写入寄存器
+                    std::cout << "操作码：" << "ADD " << "寄存器：" << reg << " 值：" << val << std::endl;
+                    std::cout << "ADD " << val << " to " << reg << ", result is " << registers[reg] << std::endl;
+                }
+                cpu->biu.updateBuses("ADD", reg, s);
+            } else {
+                std::cerr << "Invalid register for ADD: " << reg << std::endl;
+                exit(1);
+            }
+        }
+
+        // SUB指令实现
+        void sub(const std::string &reg, const std::string &value) {
+            int val = std::stoi(value);
+            if (registers.find(reg) != registers.end()) {
+                registers[reg] -= val;
+                std::cout << "操作码：" << "SUB " << "寄存器：" << reg << " 值：" << val << std::endl;
+                std::cout << "SUB " << val << " from " << reg << ", result is " << registers[reg] << std::endl;
+                cpu->biu.updateBuses("SUB", reg, value);
+            } else {
+                std::cerr << "Invalid register for SUB: " << reg << std::endl;
+                exit(1);
+            }
+        }
+
+        // MUL指令实现（默认被乘数：AX）
+        void mul(const std::string &value) {
+            int val = std::stoi(value);
+            int multiplicand = (registers.find("AX") != registers.end()) ? registers["AX"] : 0;
+            registers["AX"] = multiplicand * val;
+            std::cout << "操作码：" << "MUL " << "寄存器：" << "AX" << " 值：" << val << std::endl;
+            std::cout << "MUL " << val << " to AX, result is " << registers["AX"] << std::endl;
+            cpu->biu.updateBuses("MUL", "\\", value);
+        }
+
+        // DIV指令实现（默认被除数：AX）
+        void div(const std::string &value) {
+            int val = std::stoi(value);
+            int dividend = (registers.find("AX") != registers.end()) ? registers["AX"] : 0; // 判0操作
+            if (val == 0) {
+                std::cerr << "Division by zero error" << std::endl;
+                exit(1);
+            }
+            registers["AX"] = dividend / val;
+            std::cout << "操作码：" << "DIV " << "寄存器：" << "AX" << " 值：" << val << std::endl;
+            std::cout << "DIV " << val << " from AX, result is " << registers["AX"] << std::endl;
+            cpu->biu.updateBuses("DIV", "\\", value);
+        }
+
+        // PUSH指令实现：将寄存器中的值压入栈中
+        void push(const std::string &reg) {
+            if (registers.find(reg) != registers.end()) {
+                // 使用内存的一部分模拟栈，SP寄存器指向栈顶
+                cpu->memory.push_back(std::to_string(registers[reg])); // 将寄存器值压入栈（这里简化为存入memory）
+                registers["SP"]++; // 更新栈指针
+                std::cout << "操作码：" << "PUSH " << "寄存器：" << reg << " 值：" << registers[reg] << std::endl;
+                std::cout << "PUSH value " << registers[reg] << " from " << reg << " to stack, new SP is "
+                          << registers["SP"] << std::endl;
+            } else {
+                std::cerr << "Invalid register for PUSH: " << reg << std::endl;
+                exit(1);
+            }
+        }
+
+        // POP指令实现：从栈中弹出一个值并存入寄存器中
+        void pop(const std::string &reg) {
+            if (registers.find(reg) != registers.end()) {
+                if (registers["SP"] <= 0) {
+                    std::cerr << "Stack underflow error" << std::endl;
+                    exit(1);
+                }
+                // 从栈中弹出值（这里简化为从memory读取）
+                registers["SP"]--; // 更新栈指针
+                int value = std::stoi(cpu->memory.back()); // 获取栈顶值
+                cpu->memory.pop_back(); // 移除栈顶元素
+                registers[reg] = value; // 将值存入寄存器
+                std::cout << "操作码：" << "POP " << "寄存器：" << reg << " 值：" << value << std::endl;
+                std::cout << "POP value " << value << " to " << reg << ", new SP is " << registers["SP"] << std::endl;
+            } else {
+                std::cerr << "Invalid register for POP: " << reg << std::endl;
+                exit(1);
+            }
+        }
+
+        // JMP指令实现：跳转到指定地址继续执行指令
+        void jmp(const std::string &addr) {
+            int address = std::stoi(addr);
+            if (address >= 0 && address < cpu->memory.size()) {
+                registers["IP"] = address; // 更新指令指针到跳转地址
+                std::cout << "操作码：" << "JMP " << "寄存器：" << "\\" << " 值：" << "\\" << std::endl;
+                std::cout << "JMP to address " << address << std::endl;
+            } else {
+                std::cerr << "Invalid jump address: " << address << std::endl;
+                exit(1);
+            }
+        }
+
+        // HLT指令实现：停止执行后续指令
+        void hlt() {
+            std::cout << "操作码：" << "HLT " << "寄存器：" << "\\" << " 值：" << "\\" << std::endl;
+            std::cout << "HLT executed, program halted." << std::endl;
+            exit(0); // 退出程序，模拟系统挂起状态
+        }
+    };
+
+    EU eu; // 创建EU实例
+
+    // 调试输出
+    void printDebugState() {
+        std::cout << "Registers:" << std::endl; // 寄存器状态
+        for (const auto &[reg, val]: eu.registers) {
+            std::cout << "  " << reg << ": " << val << std::endl;
+        }
+        for (const auto &[reg, val]: registers) {
+            std::cout << "  " << reg << ": " << val << std::endl;
+        }
+
+        std::cout << "Memory:" << std::endl; // 内存内容
+        for (int i = 0; i < memory.size(); ++i) {
+            std::cout << "  [" << i << "]: " << memory[i] << std::endl;
+        }
+    }
+
+public:
+    Simple8086() : biu(this), eu(this) {
+        // 初始化寄存器、内存和指令集
+        eu.registers["AX"] = 0; // 通用寄存器
+        eu.registers["BX"] = 0;
+        eu.registers["CX"] = 0;
+        eu.registers["DX"] = 0;
+        eu.registers["SP"] = 0;
+        eu.registers["BP"] = 0;
+        eu.registers["SI"] = 0;
+        eu.registers["DI"] = 0;
+        eu.registers["FLAGS"] = 0; // 标志寄存器
+        registers["IP"] = 0; // 指令指针
+        registers["IR"] = 0; // 指令寄存器
+
+        memory = {
+                "MOV AX 15", // 将15加载到AX
+                "MOV BX AX", // 将AX的值传给BX
+                "ADD AX BX", // 将BX的值加给AX，此时AX为30
+                "SUB AX 5", // 将AX的值减5，此时AX为25
+                "JMP 6", // 跳过下一条指令
+                "ADD DX 8", // 跳过
+                "MUL 2", // 将AX的值乘以2，AX为50
+                "DIV 10", // 将AX的值除以10，AX为5
+                "PUSH BX", // 将BX的值入栈
+                "POP AX", // 将栈中的值弹出到AX，AX为15
+                "HLT" // 程序结束
+        };
+
+        instructions["MOV"] = [this](const std::string &reg, const std::string &value) { eu.mov(reg, value); };
+        instructions["ADD"] = [this](const std::string &reg, const std::string &value) { eu.add(reg, value); };
+        instructions["SUB"] = [this](const std::string &reg, const std::string &value) { eu.sub(reg, value); };
+        instructions["MUL"] = [this](const std::string & /* ignored */, const std::string &value) { eu.mul(value); };
+        instructions["DIV"] = [this](const std::string & /* ignored */, const std::string &value) { eu.div(value); };
+        instructions["PUSH"] = [this](const std::string &reg, const std::string & /* ignored */) { eu.push(reg); };
+        instructions["POP"] = [this](const std::string &reg, const std::string & /* ignored */) { eu.pop(reg); };
+        instructions["JMP"] = [this](const std::string & /* ignored */, const std::string &addr) { eu.jmp(addr); };
+        instructions["HLT"] = [this](const std::string & /* ignored */, const std::string & /* ignored */) { eu.hlt(); };
+    }
+
+    void run() {
+        std::cout << "开始执行..." << std::endl;
+        while (true) {
+            biu.fetch(); // 不断获取并执行指令，直到遇到HLT指令或程序结束
+        }
+    }
+};
+
+int main() {
+    Simple8086 cpu;
+    cpu.run(); // 开始执行指令序列
+    return 0;
+}
