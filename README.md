@@ -13,7 +13,7 @@
 
 ### 🧑‍💻 About Me
 
-- 🔭 在字节跳动从事 **AI 辅助研发工具链** 相关工作，把 MR 缺陷回溯 + CR 自动化的耗时从 **30 min → 3 min**
+- 🔭 在字节跳动从事 **AI 辅助研发工作流** 相关工作，把 MR 缺陷回溯 + CR 自动化的耗时从 **30 min → 3 min**
 - 🌱 正在深入 **LLM Agent**、**Codemod / AST**、**分布式强化学习**
 - 🛠️ 喜欢把零散痛点抽象成可复用的开源工具，已在迭代命令行工具 `conda-helper`
 - 📫 联系我：通过 GitHub Issues / Discussions
