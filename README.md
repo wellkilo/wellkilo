@@ -6,8 +6,9 @@
   <img src="https://komarev.com/ghpvc/?username=wellkilo&style=flat&color=blueviolet" />
 </p>
 
-> 🎓 保研至 **北京理工大学** · 💼 现于 **字节跳动 (ByteDance)** 实习
-> 🚀 关注方向：**AI for Code · DevInfra · 强化学习 · LLM Agents**
+> 🎓 保研至：**北京理工大学**
+> 
+> 🚀 关注方向：**AI for Code · 深度强化学习 · LLM Agents**
 
 ---
 
@@ -53,11 +54,5 @@
 </p>
 
 ---
-
-### ✨ Fun Facts
-
-- 💡 信奉「**先解决自己的问题，再解决一类人的问题**」
-- ☕ 调参 + 看 paper + 写 side project 是日常三件套
-- 🎯 长期目标：让 AI 真正成为研发流程里不可或缺的「队友」
 
 <p align="center"><i>「Stay hungry, stay foolish.」</i></p>
