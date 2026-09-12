@@ -16,6 +16,7 @@
   <p>
     <img src="https://img.shields.io/badge/Focus-Agent%20Infrastructure-0b172a?style=flat-square&labelColor=0b172a&color=2563eb" alt="Focus: Agent Infrastructure" />
     <img src="https://img.shields.io/badge/Research-Deep%20Reinforcement%20Learning-0b172a?style=flat-square&labelColor=0b172a&color=7c3aed" alt="Research: Deep Reinforcement Learning" />
+    <a href="https://github.com/affaan-m/ECC/pulls?q=is%3Apr+is%3Amerged+author%3Awellkilo"><img src="https://img.shields.io/badge/Upstream-3%20PRs%20merged%20into%20ECC-0b172a?style=flat-square&labelColor=0b172a&color=16a34a" alt="Upstream: 3 PRs merged into ECC" /></a>
     <img src="https://komarev.com/ghpvc/?username=wellkilo&style=flat-square&color=0891b2&label=PROFILE+VIEWS" alt="Profile views" />
   </p>
 </div>
@@ -30,6 +31,18 @@ My work sits at the intersection of **LLM agents**, **AI for code**, **developer
 observe  →  reproduce  →  locate  →  patch  →  verify
    evidence at every boundary · humans retain the final decision
 ```
+
+## Open-source impact
+
+I contribute production fixes to widely used developer tooling, with an emphasis on lifecycle correctness, failure containment, and regression-proof delivery. **Three of my pull requests have been reviewed and merged into [Everything Claude Code (ECC)](https://github.com/affaan-m/ECC), an agent-harness ecosystem with 250k+ GitHub stars.**
+
+| Merged upstream contribution | Engineering impact |
+| :--- | :--- |
+| **[ECC #2992](https://github.com/affaan-m/ECC/pull/2992)** · Manual Claude hook lifecycle | Built ownership-aware, idempotent hook registration across install, upgrade, doctor, repair, `--no-hooks`, and uninstall. Added fail-closed validation, serialized writers, atomic private writes, and **177 focused tests** across a 24-file change. |
+| **[ECC #2971](https://github.com/affaan-m/ECC/pull/2971)** · Loss-safe observer archival | Required an explicit completion sentinel from the current analysis run, preserved observations on process and semantic failures, and cleaned up subprocesses and temporary artifacts after timeout or interruption. |
+| **[ECC #2194](https://github.com/affaan-m/ECC/pull/2194)** · Unicode-safe CI | Replaced pictographic ratings with meaning-preserving ASCII scores across source and localized docs, unblocking the repository's Unicode-safety gate with a minimal, auditable patch. |
+
+<a href="https://github.com/affaan-m/ECC/pulls?q=is%3Apr+is%3Amerged+author%3Awellkilo"><strong>Review all merged ECC contributions ↗</strong></a>
 
 ## Selected work
 
