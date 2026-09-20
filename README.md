@@ -17,7 +17,6 @@
     <img src="https://img.shields.io/badge/Focus-Agent%20Infrastructure-0b172a?style=flat-square&labelColor=0b172a&color=2563eb" alt="Focus: Agent Infrastructure" />
     <img src="https://img.shields.io/badge/Research-Deep%20Reinforcement%20Learning-0b172a?style=flat-square&labelColor=0b172a&color=7c3aed" alt="Research: Deep Reinforcement Learning" />
     <a href="https://github.com/affaan-m/ECC/graphs/contributors"><img src="https://img.shields.io/badge/ECC-External%20Core%20Contributor-0b172a?style=flat-square&labelColor=0b172a&color=16a34a" alt="ECC: External Core Contributor" /></a>
-    <a href="https://github.com/wellkilo?achievement=galaxy-brain&tab=achievements"><img src="https://img.shields.io/badge/GitHub%20Achievement-Galaxy%20Brain-7c3aed?style=flat-square&logo=github&logoColor=ffffff" alt="GitHub Achievement: Galaxy Brain" /></a>
     <img src="https://komarev.com/ghpvc/?username=wellkilo&style=flat-square&color=0891b2&label=PROFILE+VIEWS" alt="Profile views" />
   </p>
 </div>
