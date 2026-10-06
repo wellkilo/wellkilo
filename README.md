@@ -1,5 +1,5 @@
 <div align="center">
-  <a href="https://wellkilo.github.io/Portfolio/">
+  <a href="https://wellkilo.github.io/">
     <img src="./assets/profile-hero.svg" width="100%" alt="He Dong — AI systems and agent infrastructure engineer" />
   </a>
 
