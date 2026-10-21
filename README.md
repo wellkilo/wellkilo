@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://wellkilo.github.io/">
-    <img src="./assets/profile-hero.svg" width="100%" alt="He Dong — I build AI agents that stay observable, reviewable, and safe to operate. 10 merged PRs to Everything Claude Code, top-10 contributor by commits, XERJ Corpus Hub selected contributor, and an MR review cycle cut from 30 to 3 minutes at ByteDance." />
+    <img src="https://wellkilo.github.io/images/profile-hero.svg" width="100%" alt="He Dong — I build AI agents that stay observable, reviewable, and safe to operate. Live open-source metrics for Everything Claude Code, XERJ Corpus Hub selected contributor, and an MR review cycle cut from 30 to 3 minutes at ByteDance." />
   </a>
 
   <p>
@@ -21,11 +21,14 @@
 
 ## Open source
 
-**[Everything Claude Code](https://github.com/affaan-m/ECC)** · external core contributor ·
-[**10** merged PRs](https://github.com/affaan-m/ECC/pulls?q=is%3Apr+is%3Amerged+author%3Awellkilo) ·
-[**34** upstream commits](https://github.com/affaan-m/ECC/commits/main/?author=wellkilo) ·
-[**Top 10** by commits](https://github.com/affaan-m/ECC/graphs/contributors)
-<a href="https://github.com/affaan-m/ECC"><img src="https://img.shields.io/github/stars/affaan-m/ECC?style=flat-square&logo=github&label=stars&color=16a34a&labelColor=0b172a" alt="ECC GitHub stars" align="absmiddle" /></a>
+**[Everything Claude Code](https://github.com/affaan-m/ECC)** · external core contributor
+
+<p>
+  <a href="https://github.com/affaan-m/ECC/pulls?q=is%3Apr+is%3Amerged+author%3Awellkilo"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fwellkilo.github.io%2Fdata%2Fmetrics.json&query=%24.display.mergedPrs&label=merged%20PRs&style=flat-square&color=16a34a&labelColor=0b172a&logo=github&logoColor=ffffff&cacheSeconds=3600" alt="Merged ECC pull requests" /></a>
+  <a href="https://github.com/affaan-m/ECC/commits/main/?author=wellkilo"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fwellkilo.github.io%2Fdata%2Fmetrics.json&query=%24.display.commits&label=upstream%20commits&style=flat-square&color=16a34a&labelColor=0b172a&logo=git&logoColor=ffffff&cacheSeconds=3600" alt="Upstream ECC commits" /></a>
+  <a href="https://github.com/affaan-m/ECC/graphs/contributors"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fwellkilo.github.io%2Fdata%2Fmetrics.json&query=%24.display.rank&label=contributor%20rank&style=flat-square&color=16a34a&labelColor=0b172a&logo=github&logoColor=ffffff&cacheSeconds=3600" alt="ECC contributor rank by commits" /></a>
+  <a href="https://github.com/affaan-m/ECC"><img src="https://img.shields.io/github/stars/affaan-m/ECC?style=flat-square&logo=github&logoColor=ffffff&label=stars&color=16a34a&labelColor=0b172a" alt="ECC GitHub stars" /></a>
+</p>
 
 | Area | What shipped | PRs |
 | :--- | :--- | :--- |
