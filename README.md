@@ -61,4 +61,4 @@
 ---
 
 <sub>Exploring reliable agent infrastructure, repository-scale code transformation, and scalable RL. Open to collaboration — <a href="mailto:wellkilo@foxmail.com">wellkilo@foxmail.com</a></sub>
-<img src="https://komarev.com/ghpvc/?username=wellkilo&style=flat-square&color=0891b2&label=views" alt="Profile views" align="right" />
+<img src="https://hits.sh/github.com/wellkilo.svg?style=flat-square&label=views&color=0891b2&extraCount=1360" alt="Profile views" align="right" />
