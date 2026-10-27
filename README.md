@@ -1,13 +1,7 @@
-<div align="center">
-  <a href="https://wellkilo.github.io/">
-    <img src="https://wellkilo.github.io/images/profile-hero.svg" width="100%" alt="He Dong — I build AI agents that stay observable, reviewable, and safe to operate. Live open-source metrics for Everything Claude Code, XERJ Corpus Hub selected contributor, and an MR review cycle cut from 30 to 3 minutes at ByteDance." />
-  </a>
 
-  <p>
-    <a href="https://wellkilo.github.io/"><strong>Website</strong></a>
-    &nbsp;·&nbsp;
-    <a href="mailto:wellkilo@foxmail.com"><strong>Email</strong></a>
-  </p>
+**He Dong (董赫)** — M.S. student at BIT, previously two AI engineering & evaluation internships at ByteDance.
+
+<div align="center">
 
   <p>
     <a href="https://github.com/affaan-m/ECC/graphs/contributors"><img src="https://img.shields.io/badge/ECC-External%20Core%20Contributor-16a34a?style=flat-square&labelColor=0b172a" alt="ECC: External Core Contributor" /></a>
@@ -16,8 +10,6 @@
     <img src="https://img.shields.io/badge/M.S.-Beijing%20Institute%20of%20Technology-0891b2?style=flat-square&labelColor=0b172a" alt="M.S. at Beijing Institute of Technology" />
   </p>
 </div>
-
-**He Dong (董赫)** — M.S. student at BIT, previously two AI engineering & evaluation internships at ByteDance. I build agent infrastructure, evaluation systems, and code-intelligence tools, and I ship the tests, traces, and rollback paths as part of the feature.
 
 ## Open source
 
